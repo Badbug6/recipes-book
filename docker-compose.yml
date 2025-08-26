@@ -1,0 +1,35 @@
+# Specifica la versione della sintassi di Docker Compose. 3.8 è una scelta moderna e stabile.
+version: '3.8'
+
+# Inizia la definizione dei nostri servizi (i container).
+services:
+  # Diamo un nome logico al nostro servizio.
+  ricettario-app:
+    # Nome che verrà assegnato al container una volta in esecuzione, facile da ricordare.
+    container_name: ricettario
+    
+    # Istruzioni per l'immagine:
+    # Invece di scaricare un'immagine, la costruiamo usando il Dockerfile
+    # che si trova nella cartella corrente (indicata con '.').
+    build: .
+    
+    # Mappatura delle porte:
+    # Collega la porta 8080 del tuo computer (HOST) alla porta 8080 del container (CONTAINER).
+    # Questo ti permette di accedere all'app tramite http://localhost:8080.
+    ports:
+      - "8080:8080"
+      
+    # Mappatura dei volumi (fondamentale per i dati):
+    # Collega le cartelle/file del tuo computer a quelle interne al container.
+    # Questo assicura che le ricette, i duplicati e l'indice JSON non vengano persi
+    # quando il container viene fermato o rimosso.
+    volumes:
+      - ./le-mie-ricette:/app/le-mie-ricette
+      - ./duplicati:/app/duplicati
+      - ./recipes.json:/app/recipes.json
+      
+    # Policy di riavvio:
+    # 'unless-stopped' è ideale per un servizio self-hosted. Il container si riavvierà
+    # sempre in automatico (ad esempio dopo un riavvio del PC o un crash) a meno che
+    # tu non lo fermi esplicitamente con 'docker-compose down'.
+    restart: unless-stopped

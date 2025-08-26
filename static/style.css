@@ -1,0 +1,58 @@
+main.container {
+    max-width: 1200px !important;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.centered-container {
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+}
+
+.autocomplete-container {
+    position: relative;
+}
+
+.autocomplete-suggestions {
+    position: absolute; border: 1px solid #555; border-top: none; z-index: 99;
+    top: 100%; left: 0; right: 0; background-color: #2a2a2a;
+    max-height: 300px; overflow-y: auto;
+}
+
+.autocomplete-suggestions a {
+    display: block; padding: 12px; text-decoration: none;
+    color: #e0e0e0; cursor: pointer;
+}
+
+.autocomplete-suggestions a:hover {
+    background-color: #d63384; color: white;
+}
+
+.suggestion-cloud {
+    display: flex; flex-wrap: wrap; justify-content: center;
+    gap: 10px 12px; list-style-type: none; padding: 0; margin-top: 1.5rem;
+}
+
+.suggestion-tag {
+    display: inline-block; padding: 5px 15px; color: #ccc;
+    background-color: #3a3a3a; border: 1px solid #555;
+    border-radius: 20px; text-decoration: none; font-size: 0.9em;
+    transition: background-color 0.2s ease;
+}
+
+.suggestion-tag:hover {
+    background-color: #555;
+}
+
+#reindex-loader {
+    display: none;
+    margin-top: 1rem;
+    padding: 10px;
+    background-color: #3a3a3a;
+    border-radius: 5px;
+}
