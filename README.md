@@ -88,7 +88,7 @@ Questi sono i passaggi per far girare Recipe Book sul tuo computer o server.
     ```
 
 ## 📂 Struttura del Progetto
-
+```
 ├── le-mie-ricette/ # Dove metti i tuoi file di ricette .html
 ├── static/
 │ └── style.css # Stili CSS personalizzati per l'interfaccia
@@ -100,3 +100,4 @@ Questi sono i passaggi per far girare Recipe Book sul tuo computer o server.
 ├── requirements.txt # Le dipendenze Python del progetto
 ├── Dockerfile # Le istruzioni per costruire l'immagine Docker
 └── docker-compose.yml # Il file per avviare e gestire l'applicazione facilmente
+```
