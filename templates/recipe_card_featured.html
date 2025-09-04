@@ -1,0 +1,14 @@
+<!-- templates/recipe_card_featured.html -->
+<a href="{{ url_for('recipe_detail', recipe_title=recipe.title) }}" class="recipe-card-featured">
+    <img src="{{ recipe.cover_image or '' }}" alt="Immagine di {{ recipe.title }}" class="featured-image">
+    <!-- L'icona del cuore ora è piena (ph-fill) -->
+    <div class="heart-icon {{ 'favorited' if recipe.title in user_favorites else '' }}" data-title="{{ recipe.title }}">
+        <i class="ph-fill ph-heart"></i>
+    </div>
+    <div class="featured-content">
+        <h3>{{ recipe.title }}</h3>
+        <div class="featured-meta">
+            <span><i class="ph-fill ph-timer"></i> {{ recipe.total_time }}</span>
+        </div>
+    </div>
+</a>

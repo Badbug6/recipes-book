@@ -3,3 +3,5 @@ lxml
 Flask
 waitress
 tqdm
+Flask-SQLAlchemy==3.1.1
+Flask-Login==0.6.3

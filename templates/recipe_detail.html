@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ recipe.title }}</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="dark-theme">
+    <div class="recipe-container">
+        
+        <header class="recipe-header">
+            <a href="{{ url_for('index') }}" class="back-button"><i class="ph-bold ph-arrow-left"></i></a>
+            
+            <div class="heart-icon {{ 'favorited' if recipe.title in user_favorites else '' }}" data-title="{{ recipe.title }}">
+                <i class="ph-fill ph-heart"></i>
+            </div>
+
+            <img src="{{ recipe.cover_image or '' }}" alt="Immagine di {{ recipe.title }}">
+        </header>
+
+        <main class="recipe-content">
+            <h1>{{ recipe.title }}</h1>
+            
+            {% if found_allergens %}
+                <div class="allergy-alert">
+                    <i class="ph-fill ph-warning-circle"></i>
+                    <div>
+                        <strong>Attenzione Allergeni!</strong>
+                        <span>Questa ricetta potrebbe contenere: {{ found_allergens|join(', ') }}</span>
+                    </div>
+                </div>
+            {% endif %}
+
+            <div class="recipe-meta">
+                <div class="meta-item">
+                    <i class="ph-fill ph-clock"></i>
+                    <div>
+                        <strong>{{ recipe.prep_time }}</strong>
+                        <small>Preparazione</small>
+                    </div>
+                </div>
+                <div class="meta-item">
+                    <i class="ph-fill ph-timer"></i>
+                    <div>
+                        <strong>{{ recipe.total_time }}</strong>
+                        <small>Tempo Totale</small>
+                    </div>
+                </div>
+                <div class="meta-item">
+                    <i class="ph-fill ph-users"></i>
+                    <div>
+                        <strong>{{ recipe.servings }}</strong>
+                        <small>Porzioni</small>
+                    </div>
+                </div>
+            </div>
+
+            <section class="recipe-section">
+                <h2>Ingredienti</h2>
+                <ul class="ingredient-list">
+                    {% for ingredient in recipe.ingredients %}<li>{{ ingredient }}</li>{% endfor %}
+                </ul>
+            </section>
+
+            <section class="recipe-section">
+                <h2>Procedimento</h2>
+                <ol class="steps-list">
+                     {% for step in recipe.steps %}<li>{{ step }}</li>{% endfor %}
+                </ol>
+            </section>
+
+            {% if recipe.useful_items %}
+                <section class="recipe-section">
+                    <h2>Utensili Utili</h2>
+                    <ul class="ingredient-list">
+                        {% for item in recipe.useful_items %}<li>{{ item }}</li>{% endfor %}
+                    </ul>
+                </section>
+            {% endif %}
+
+            {% if recipe.nutritions %}
+                <section class="recipe-section">
+                    <h2>Valori Nutrizionali</h2>
+                    <ul class="ingredient-list">
+                        {% for key, value in recipe.nutritions.items() %}
+                            <li><strong>{{ key }}:</strong> {{ value }}</li>
+                        {% endfor %}
+                    </ul>
+                </section>
+            {% endif %}
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const heartIcon = document.querySelector('.recipe-header .heart-icon');
+            if (heartIcon) {
+                heartIcon.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const recipeTitle = heartIcon.dataset.title;
+                    
+                    fetch(`/toggle_favorite/${recipeTitle}`, { method: 'POST' })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status === 'ok') {
+                                heartIcon.classList.toggle('favorited', data.favorited);
+                            }
+                        });
+                });
+            }
+        });
+    </script>
+</body>
+</html>

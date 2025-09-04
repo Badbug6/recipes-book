@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modifica Profilo - Recipe Book</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="dark-theme"> <!-- Applichiamo il tema scuro a questa pagina -->
+    <div class="profile-page-wrapper">
+        <header class="page-header">
+            <a href="{{ url_for('index') }}" class="back-button-collections"><i class="ph-bold ph-arrow-left"></i></a>
+            <h1>Modifica Profilo</h1>
+        </header>
+
+        <div class="profile-container">
+            <div class="profile-picture-container">
+        <div class="profile-picture">
+            {% if current_user.profile_image_url and current_user.profile_image_url != 'default_avatar.png' %}
+                <img src="{{ url_for('static', filename=current_user.profile_image_url) }}" alt="Foto profilo">
+            {% else %}
+                <i class="ph-fill ph-user"></i>
+            {% endif %}
+        </div>
+        <label for="profile_photo" class="edit-photo-link">Modifica Foto</label>
+        <input type="file" id="profile_photo" name="profile_photo" accept="image/*" style="display: none;">
+        </div>
+
+            <!-- Messaggi di successo (es. "Allergie salvate!") -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}{% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}{% endif %}
+            {% endwith %}
+
+            <form method="POST" class="profile-form" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="username">Nome Utente</label>
+                    <input type="text" id="username" name="username" value="{{ current_user.username }}" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label for="allergies">Le Mie Allergie</label>
+                    <p class="form-hint">Una per riga, es: <code>Lattosio: latte, formaggio</code></p>
+                    <textarea id="allergies" name="allergies" rows="6">{{ current_user.allergies_text or '' }}</textarea>
+                </div>
+                
+                <button type="submit" class="button-primary">Salva</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

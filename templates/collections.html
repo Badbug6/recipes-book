@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collezioni - Recipe Book</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="page-container">
+        <header class="page-header">
+            <a href="{{ url_for('index') }}" class="back-button-collections"><i class="ph-bold ph-arrow-left"></i></a>
+            <h1>Collezioni</h1>
+        </header>
+
+        <div class="collection-grid">
+            {% for collection in collections %}
+                <!-- Per la prima collezione usiamo una classe speciale per renderla più grande -->
+                <a href="{{ url_for('index', collection=collection.name) }}" class="collection-card {{ 'is-featured' if loop.first else '' }}">
+                    <img src="{{ collection.image or '' }}" alt="Immagine per {{ collection.name }}">
+                    <div class="collection-card-title">{{ collection.name }}</div>
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

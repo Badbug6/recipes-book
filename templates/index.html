@@ -3,109 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Il Mio Ricettario</title>
-    
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/dark.css">
+    <title>Recipe Book</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body>
-    <main class="container">
-        <header class="text-center">
-            <h1>Il Mio Ricettario Personale</h1>
-        </header>
+<body class="dark-theme">
+    {% include '_nav.html' %}
 
-        <section class="centered-container">
-            <h2 class="text-center">Trova una Categoria</h2>
-            <div class="autocomplete-container">
-                <input type="text" id="category-search-input" placeholder="Inizia a scrivere...">
-                <div class="autocomplete-suggestions" id="category-suggestions-list"></div>
-            </div>
-            
-            <div class="suggestion-cloud">
-                <span style="color: #888; align-self: center;">Qualche idea:</span>
-                {% for folder in random_folders %}
-                    <a href="{{ url_for('index', folder=folder) }}" class="suggestion-tag">{{ folder }}</a>
+    <div class="page-container">
+        {% if is_search_result %}
+            <!-- Layout per i risultati di ricerca -->
+            <h2 class="section-title">{{ display_title }}</h2>
+            <div class="recipe-grid">
+                {% for recipe in recipes %}
+                    {% include 'recipe_card.html' %}
+                {% else %}
+                    <p style="text-align: center;">Nessuna ricetta trovata.</p>
                 {% endfor %}
             </div>
-        </section>
-
-        <hr>
-
-        <section class="centered-container">
-            <h3 class="text-center" style="margin-top: 0;">Oppure cerca in tutte le ricette</h3>
-            <form method="GET" action="{{ url_for('index') }}">
-                <input type="search" name="search" placeholder="Cerca per titolo o tag..." value="{{ search_query }}">
-            </form>
-        </section>
-        
-        <div class="text-center">
-            <form id="reindex-form" method="POST" action="{{ url_for('reindex_recipes') }}" style="display: inline-block;">
-                <button id="reindex-button" type="submit">Aggiorna Indice Ricette</button>
-            </form>
-            <div id="reindex-loader">
-                <strong>Aggiornamento in corso...</strong>
-                <p style="font-size: 0.9em; margin: 5px 0 0 0;">Questa operazione potrebbe richiedere alcuni minuti. La pagina si ricaricherà automaticamente al termine.</p>
-            </div>
-        </div>
-
-        {% if display_title %}
-            <h3 style="margin-top: 2rem;">{{ display_title }}</h3>
-        {% endif %}
-
-        {% for recipe in recipes %}
-            <article>
-                <header>
-                    <a href="{{ url_for('serve_recipe', filepath=recipe.path) }}" target="_blank">
-                        <strong>{{ recipe.title }}</strong>
-                    </a>
-                </header>
-                {% if recipe.tags %}
-                    <footer>
-                        {% for tag in recipe.tags %}
-                            <small>{{ tag }}</small>{% if not loop.last %} • {% endif %}
-                        {% endfor %}
-                    </footer>
-                {% endif %}
-            </article>
         {% else %}
-            {% if search_query or selected_folder %}
-                <p>Nessuna ricetta trovata.</p>
-            {% else %}
-                <p class="text-center">Usa la ricerca per trovare ricette o categorie.</p>
+            <!-- NUOVO LAYOUT HOMEPAGE ISPIRATO A FIGMA -->
+            <header class="home-greeting">
+                <h1>Ciao, {{ current_user.username }}!</h1>
+                <p>Cosa cuciniamo oggi?</p>
+            </header>
+
+            <div class="filter-pills">
+                {% for category in filter_categories %}
+                    <a href="#" class="pill">{{ category }}</a>
+                {% endfor %}
+            </div>
+
+            {% if trending_recipe %}
+                <section>
+                    <h2 class="section-title-left">Ricetta del Giorno</h2>
+                    {% set recipe = trending_recipe %}
+                    <!-- Questo è il cuoricino della ricetta principale, l'ho aggiornato -->
+                    {% include 'recipe_card_featured.html' %}
+                </section>
             {% endif %}
-        {% endfor %}
-    </main>
+
+            <section class="your-recipes-section">
+                <h2 class="section-title-left">Le Tue Ricette</h2>
+                <div class="recipe-grid">
+                    {% for recipe in recipes %}
+                        {% include 'recipe_card.html' %}
+                    {% endfor %}
+                </div>
+            </section>
+        {% endif %}
+    </div>
 
     <script>
-        const allCategories = {{ folders|tojson }};
-        const searchInput = document.getElementById('category-search-input');
-        const suggestionsList = document.getElementById('category-suggestions-list');
-        const urlTemplate = "{{ url_for('index', folder='__FOLDER_NAME__') }}";
-
-        searchInput.addEventListener('input', function() {
-            const query = this.value.toLowerCase();
-            suggestionsList.innerHTML = '';
-            if (!query) return;
-            const filteredCategories = allCategories.filter(c => c.toLowerCase().includes(query));
-            filteredCategories.forEach(c => {
-                const link = document.createElement('a');
-                link.textContent = c;
-                link.href = urlTemplate.replace('__FOLDER_NAME__', encodeURIComponent(c));
-                suggestionsList.appendChild(link);
+        // SCRIPT PER I PREFERITI
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.heart-icon').forEach(icon => {
+                icon.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const recipeTitle = icon.dataset.title;
+                    fetch(`/toggle_favorite/${recipeTitle}`, { method: 'POST' })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status === 'ok') {
+                                document.querySelectorAll(`[data-title="${recipeTitle}"]`).forEach(el => {
+                                    el.classList.toggle('favorited', data.favorited);
+                                });
+                            }
+                        });
+                });
             });
-        });
-        document.addEventListener('click', e => {
-            if (e.target !== searchInput) suggestionsList.innerHTML = '';
-        });
-
-        const reindexForm = document.getElementById('reindex-form');
-        const reindexButton = document.getElementById('reindex-button');
-        const reindexLoader = document.getElementById('reindex-loader');
-
-        reindexForm.addEventListener('submit', function() {
-            reindexButton.disabled = true;
-            reindexButton.textContent = 'In corso...';
-            reindexLoader.style.display = 'block';
         });
     </script>
 </body>

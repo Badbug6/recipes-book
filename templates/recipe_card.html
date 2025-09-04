@@ -1,0 +1,16 @@
+<!-- templates/recipe_card.html -->
+<a href="{{ url_for('recipe_detail', recipe_title=recipe.title) }}" class="recipe-card">
+    <div class="card-image-wrapper">
+        <img src="{{ recipe.cover_image or '' }}" alt="Immagine di {{ recipe.title }}" class="card-image">
+        <!-- LA MODIFICA È QUI -->
+        <div class="heart-icon {{ 'favorited' if recipe.title in user_favorites else '' }}" data-title="{{ recipe.title }}">
+            <i class="ph-fill ph-heart"></i>
+        </div>
+    </div>
+    <div class="card-content">
+        <h3 class="card-title">{{ recipe.title }}</h3>
+        <div class="card-meta">
+            <span><i class="ph-fill ph-timer"></i> {{ recipe.total_time }}</span>
+        </div>
+    </div>
+</a>

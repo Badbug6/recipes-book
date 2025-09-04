@@ -1,0 +1,19 @@
+<!-- templates/_nav.html -->
+<nav class="navbar">
+    <div class="nav-container">
+        <a href="{{ url_for('index') }}" class="nav-brand">Recipe Book</a>
+        <div class="nav-menu">
+            {% if current_user.is_authenticated %}
+                <div class="nav-user-profile">
+                    <img src="{{ url_for('static', filename=current_user.profile_image_url) if current_user.profile_image_url else url_for('static', filename='uploads/avatars/default_avatar.png') }}" alt="Avatar">
+                    <span>Ciao, {{ current_user.username }}!</span>
+                </div>
+                <a href="{{ url_for('profile') }}" class="nav-link">Profilo</a>
+                <a href="{{ url_for('logout') }}" class="nav-link">Logout</a>
+            {% else %}
+                <a href="{{ url_for('login') }}" class="nav-link">Login</a>
+                <a href="{{ url_for('register') }}" class="nav-link">Registrati</a>
+            {% endif %} 
+        </div>
+    </div>
+</nav>
